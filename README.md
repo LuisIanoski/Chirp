@@ -1,8 +1,15 @@
-# Chirp - Sistema de Monitoramento com Detecção de Objetos em Tempo Real
+# Chirp - Sistema de Monitoramento Ambiental utilizando Visão Computacional
 
 Aplicação **Fullstack** para monitoramento em tempo real com detecção de objetos usando YOLO, Django e WebSockets. Monitore múltiplas câmeras IP simultaneamente através de uma interface web intuitiva com sistema de gerenciamento de risco.
 
-## 🚀 Tecnologias
+## Eventos
+
+- Apresentado em:
+  - **SIPEX 2025** - Irati
+  - **Paraná Faz Ciência** 2025 - Guarapuava
+  - **XSEPIN** - Foz Do Iguaçu
+
+## Tecnologias
 
 - **Backend:**
   - Python 3.12+
@@ -29,7 +36,7 @@ Aplicação **Fullstack** para monitoramento em tempo real com detecção de obj
   - python-dotenv
   - mysqlclient
 
-## 📋 Pré-requisitos
+## Pré-requisitos
 
 - Python 3.12 ou superior
 - MySQL 8.0 ou superior
@@ -37,7 +44,7 @@ Aplicação **Fullstack** para monitoramento em tempo real com detecção de obj
 - Git
 - Câmeras IP com acesso por RTSP ou HTTP
 
-## 🔧 Instalação
+## Instalação
 
 ### 1. Clone o repositório:
 ```bash
@@ -103,7 +110,7 @@ gunicorn extracaoimg.wsgi:application --bind 0.0.0.0:8000
 
 O servidor estará disponível em `http://localhost:8000`
 
-## 📁 Estrutura do Projeto
+## Estrutura do Projeto
 
 ```
 Chirp/
@@ -148,7 +155,7 @@ Chirp/
 └── .env.example             # Arquivo de exemplo de variáveis de ambiente
 ```
 
-## 🌐 Interface Web
+## Interface Web
 
 ### Páginas Disponíveis:
 
@@ -171,13 +178,13 @@ Chirp/
 - Descrição detalhada de cada nível de risco
 - Histórico de mudanças de risco
 
-## 🔒 Autenticação e Permissões
+## Autenticação e Permissões
 
-- ✅ **Operações GET:** Públicas (sem autenticação)
-- 🔐 **Operações POST, PUT, DELETE:** Requerem autenticação via token ou sessão
-- 🛠️ **Painel Admin:** Disponível em `/admin`
+- **Operações GET:** Públicas (sem autenticação)
+- **Operações POST, PUT, DELETE:** Requerem autenticação via token ou sessão
+- **Painel Admin:** Disponível em `/admin`
 
-## 📡 Endpoints da API
+## Endpoints da API
 
 ### Câmeras
 
@@ -210,7 +217,7 @@ Chirp/
 | GET | `/api/detections/` | Lista todas as detecções | Não |
 | GET | `/api/detections/{id}/` | Detalhes de uma detecção | Não |
 
-## 📊 Modelos de Dados
+## Modelos de Dados
 
 ### Camera
 ```json
@@ -253,7 +260,7 @@ Chirp/
 }
 ```
 
-## ⚙️ Configurações Importantes
+## Configurações Importantes
 
 ### Configurações de Detecção (em `camera/object_detector.py`):
 - **Confiança mínima:** 0.45 (ajustável)
@@ -274,7 +281,7 @@ gunicorn extracaoimg.wsgi:application --workers 4 --bind 0.0.0.0:8000
 daphne -b 0.0.0.0 -p 8000 extracaoimg.asgi:application
 ```
 
-## 🚦 Níveis de Risco
+## Níveis de Risco
 
 | Nível | Cor | Descrição | Ação |
 |-------|-----|-----------|------|
@@ -283,7 +290,7 @@ daphne -b 0.0.0.0 -p 8000 extracaoimg.asgi:application
 | **Alto** | 🔴 Vermelho | Situação de alerta, ação imediata recomendada | Agir |
 | **Crítico** | 🔴 Vermelho Escuro | Perigo iminente, ação urgente necessária | Intervir Urgente |
 
-## 📝 Exemplos de Uso
+## Exemplos de Uso
 
 ### Criar um Dashboard
 ```bash
@@ -312,7 +319,7 @@ curl -X PATCH http://localhost:8000/api/dashboards/dash_001/update-risk/ \
 http://localhost:8000/api/cameras/cam_001/stream/
 ```
 
-## 🔧 Troubleshooting
+## Troubleshooting
 
 ### Problema: Conexão com MySQL falha
 - Verificar se o MySQL está rodando
@@ -334,7 +341,7 @@ http://localhost:8000/api/cameras/cam_001/stream/
 - Aumentar timeout de conexão
 - Usar Daphne em produção em vez de Gunicorn
 
-## 📦 Dependências Principais
+## Dependências Principais
 
 Todas as dependências estão listadas em `requirements.txt`:
 - `django==5.2.1` - Framework web
@@ -347,32 +354,15 @@ Todas as dependências estão listadas em `requirements.txt`:
 - `gunicorn` - Servidor WSGI
 - `python-dotenv` - Variáveis de ambiente
 
-## 📄 Licença
+## Licença
 
 Este projeto está licenciado sob a Licença MIT - veja o arquivo [LICENSE](LICENSE) para detalhes.
 
-## 👨‍💻 Contribuições
 
-Contribuições são bem-vindas! Por favor:
+## Suporte
 
-1. Faça um Fork do projeto
-2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
-3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
-4. Push para a branch (`git push origin feature/AmazingFeature`)
-5. Abra um Pull Request
-
-## 🐛 Reportar Problemas
-
-Encontrou um bug? Abra uma [issue](https://github.com/LuisIanoski/Chirp/issues) descrevendo:
-- Comportamento esperado vs. observado
-- Passos para reproduzir
-- Versão do Python e dependências
-- Logs de erro relevantes
-
-## 📞 Suporte
-
-Para dúvidas ou sugestões, abra uma discussão ou issue no repositório.
+Para dúvidas ou sugestões, contate: [Luís Henrique](luish.ianoski@gmail.com).
 
 ---
 
-**Desenvolvido com ❤️ usando Django e YOLO**
+**Desenvolvido com <3 usando Django e YOLO**
