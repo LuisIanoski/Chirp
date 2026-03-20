@@ -43,6 +43,7 @@ Aplicação **Fullstack** para monitoramento em tempo real com detecção de obj
 - Ambiente virtual Python (venv)
 - Git
 - Câmeras IP com acesso por RTSP ou HTTP
+- Protótipo para medição do nível do rio.
 
 ## Instalação
 
