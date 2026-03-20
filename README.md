@@ -8,7 +8,7 @@ Aplicação **Fullstack** para monitoramento em tempo real com detecção de obj
   - **SIPEX 2025** - Irati
   - **Paraná Faz Ciência** 2025 - Guarapuava
   - **XSEPIN** - Foz Do Iguaçu
-
+ 
 ## Tecnologias
 
 - **Backend:**
@@ -35,6 +35,22 @@ Aplicação **Fullstack** para monitoramento em tempo real com detecção de obj
 - **Utilitários:**
   - python-dotenv
   - mysqlclient
+
+## Arquitetura
+
+- Backend estruturado em Django + Django REST Framework
+- Comunicação em tempo real com Django Channels (WebSockets)
+- Pipeline de processamento de vídeo:
+  - Captura de frames (OpenCV)
+  - Inferência com YOLO (PyTorch)
+  - Armazenamento das detecções
+
+## Desafios Técnicos
+
+- Processamento de múltiplos streams simultâneos
+- Balanceamento entre performance e precisão do modelo YOLO
+- Integração entre backend web e processamento de visão computacional
+- Gerenciamento de estado em tempo real com WebSockets
 
 ## Pré-requisitos
 
