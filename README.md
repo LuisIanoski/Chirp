@@ -1,126 +1,378 @@
-# API de Detecção de Objetos com YOLO
+# Chirp - Sistema de Monitoramento com Detecção de Objetos em Tempo Real
 
-API Django para detecção de objetos em streams de vídeo usando YOLO e armazenamento SQLite.
+Aplicação **Fullstack** para monitoramento em tempo real com detecção de objetos usando YOLO, Django e WebSockets. Monitore múltiplas câmeras IP simultaneamente através de uma interface web intuitiva com sistema de gerenciamento de risco.
 
 ## 🚀 Tecnologias
 
-- Python 3.12+
-- Django 5.2.1
-- Django REST Framework
-- SQLite3
-- OpenCV
-- YOLO (ultralytics)
-- NumPy
-- PyTorch
+- **Backend:**
+  - Python 3.12+
+  - Django 5.2.1
+  - Django REST Framework
+  - Django Channels (WebSockets)
+  - Gunicorn
+
+- **Frontend:**
+  - HTML5
+  - CSS3
+  - JavaScript
+
+- **Visão Computacional:**
+  - OpenCV
+  - YOLO (ultralytics)
+  - PyTorch
+  - NumPy
+
+- **Banco de Dados:**
+  - MySQL 8.0+
+
+- **Utilitários:**
+  - python-dotenv
+  - mysqlclient
 
 ## 📋 Pré-requisitos
 
 - Python 3.12 ou superior
+- MySQL 8.0 ou superior
 - Ambiente virtual Python (venv)
 - Git
+- Câmeras IP com acesso por RTSP ou HTTP
 
 ## 🔧 Instalação
 
-1. Clone o repositório:
+### 1. Clone o repositório:
 ```bash
-git clone https://github.com/LuisIanoski/API-ObjectDetection.git
-cd API-ObjectDetection
+git clone https://github.com/LuisIanoski/Chirp.git
+cd Chirp
 ```
 
-2. Configure o ambiente virtual:
+### 2. Configure o ambiente virtual:
 ```bash
-python -m venv nenv
-nenv\Scripts\activate
+# Windows
+python -m venv venv
+venv\Scripts\activate
+
+# Linux/Mac
+python -m venv venv
+source venv/bin/activate
 ```
 
-3. Instale as dependências:
+### 3. Instale as dependências:
 ```bash
 pip install -r requirements.txt
 ```
 
-4. Execute as migrações:
+### 4. Configure as variáveis de ambiente:
 ```bash
-python manage.py makemigrations camera monitoramento
+# Copie o arquivo de exemplo
+cp .env.example .env
+
+# Edite o arquivo .env com suas configurações
+```
+
+Variáveis necessárias no `.env`:
+```
+DEBUG=False
+SECRET_KEY=sua-chave-secreta-aqui
+DB_NAME=chirp_db
+DB_USER=seu_usuario_mysql
+DB_PASSWORD=sua_senha_mysql
+DB_HOST=localhost
+DB_PORT=3306
+ALLOWED_HOSTS=localhost,127.0.0.1
+```
+
+### 5. Execute as migrações do banco de dados:
+```bash
+python manage.py makemigrations
 python manage.py migrate
 ```
 
-5. Crie um superusuário para acesso admin:
+### 6. Crie um superusuário para acesso admin:
 ```bash
 python manage.py createsuperuser
 ```
 
-6. Inicie o servidor:
+### 7. Inicie o servidor Django:
 ```bash
+# Desenvolvimento
 python manage.py runserver
+
+# Produção (com Gunicorn)
+gunicorn extracaoimg.wsgi:application --bind 0.0.0.0:8000
 ```
+
+O servidor estará disponível em `http://localhost:8000`
 
 ## 📁 Estrutura do Projeto
 
 ```
-API-ObjectDetection/
-├── camera/                 # App de gerenciamento de câmeras
-│   ├── models.py          # Modelo de câmeras
-│   ├── views.py           # ViewSets e lógica de negócio
-│   ├── urls.py           # Rotas da API
-│   └── services.py       # Serviços de processamento
-├── monitoramento/         # App de detecções
-│   ├── models.py         # Modelo de detecções
-│   ├── views.py          # Views de stream e detecções
-│   └── urls.py          # Rotas de monitoramento
-├── extracaoimg/          # Configurações do projeto
-└── frames/               # Frames salvos com detecções
+Chirp/
+├── camera/                    # App Django - Gerenciamento de câmeras e detecção
+│   ├── models.py             # Modelo de câmeras
+│   ├── views.py              # ViewSets e endpoints de câmeras
+│   ├── serializers.py        # Serialização de dados
+│   ├── urls.py               # Rotas da API de câmeras
+│   ├── object_detector.py    # Lógica de detecção YOLO
+│   └── services.py           # Serviços de processamento de vídeo
+│
+├── monitoramento/            # App Django - Lógica de monitoramento e streaming
+│   ├── models.py             # Modelo de detecções
+│   ├── views.py              # Endpoints de detecções e streaming
+│   ├── serializers.py        # Serialização de detecções
+│   ├── urls.py               # Rotas de monitoramento
+│   ├── camera.py             # Classe para gerenciamento de streams
+│   ├── video_extractor.py    # Extração de frames de vídeo
+│   └── json_converter.py     # Conversão de dados para JSON
+│
+├── dashboard/                # App Django - Interface Web e gerenciamento de risco
+│   ├── models.py             # Modelo Dashboard com níveis de risco
+│   ├── views.py              # Views da interface web e API de dashboards
+│   ├── serializers.py        # Serialização de dados de dashboard
+│   ├── urls.py               # Rotas de dashboards
+│   └── admin.py              # Configuração do painel admin
+│
+├── extracaoimg/              # Configurações do projeto Django
+│   ├── settings.py           # Configurações gerais
+│   ├── urls.py               # Roteamento principal
+│   ├── wsgi.py               # Configuração WSGI para produção
+│   └── asgi.py               # Configuração ASGI para WebSockets
+│
+├── templates/                # Templates HTML frontend
+│   ├── dashboard.html        # Interface principal de monitoramento
+│   ├── dashboard_management.html  # Gerenciamento de dashboards e câmeras
+│   └── risco.html            # Página de gerenciamento de níveis de risco
+│
+├── static/                   # Arquivos estáticos (CSS, JS, imagens)
+├── manage.py                 # Gerenciador Django
+├── requirements.txt          # Dependências do projeto
+└── .env.example             # Arquivo de exemplo de variáveis de ambiente
 ```
+
+## 🌐 Interface Web
+
+### Páginas Disponíveis:
+
+#### 1. **Dashboard Principal** (`/dashboards/<dashboard_id>/`)
+- Visualização de todas as câmeras vinculadas
+- Stream em tempo real de vídeos
+- Status de cada câmera (ativo/inativo/erro)
+- Indicador visual de nível de risco do dashboard
+- Adição/remoção de câmeras (máximo 3 câmeras por dashboard)
+
+#### 2. **Gerenciamento de Dashboard** (`/dashboards/<dashboard_id>/management/`)
+- Criar e editar dashboards
+- Adicionar câmeras via link RTSP/HTTP
+- Gerenciar configurações de monitoramento
+- Visualizar histórico de alterações
+
+#### 3. **Gerenciamento de Risco** (`/dashboards/<dashboard_id>/risco/`)
+- Visualizar nível atual de risco: **Baixo** (Verde), **Médio** (Amarelo), **Alto** (Vermelho), **Crítico** (Vermelho Escuro)
+- Alterar nível de risco conforme necessário
+- Descrição detalhada de cada nível de risco
+- Histórico de mudanças de risco
 
 ## 🔒 Autenticação e Permissões
 
-- Operações GET são públicas
-- Operações POST, PUT, DELETE requerem autenticação admin
-- Interface admin disponível em `/admin`
+- ✅ **Operações GET:** Públicas (sem autenticação)
+- 🔐 **Operações POST, PUT, DELETE:** Requerem autenticação via token ou sessão
+- 🛠️ **Painel Admin:** Disponível em `/admin`
 
 ## 📡 Endpoints da API
 
-### Câmeras (Camera)
+### Câmeras
 
 | Método | Endpoint | Descrição | Auth |
 |--------|----------|-----------|------|
-| GET | `/api/cameras/` | Lista câmeras | Não |
-| POST | `/api/cameras/` | Adiciona câmera | Sim |
-| GET | `/api/cameras/{id}/` | Detalhes da câmera | Não |
+| GET | `/api/cameras/` | Lista todas as câmeras | Não |
+| POST | `/api/cameras/` | Adiciona nova câmera | Sim |
+| GET | `/api/cameras/{id}/` | Detalhes de uma câmera | Não |
 | PUT | `/api/cameras/{id}/` | Atualiza câmera | Sim |
 | DELETE | `/api/cameras/{id}/` | Remove câmera | Sim |
+| GET | `/api/cameras/{id}/stream/` | Stream ao vivo (MJPEG) | Não |
 
-### Monitoramento (Detection)
+### Dashboards
 
 | Método | Endpoint | Descrição | Auth |
 |--------|----------|-----------|------|
-| GET | `/api/cameras/{id}/stream/` | Stream ao vivo | Não |
-| GET | `/api/cameras/{id}/detections/` | Lista detecções | Não |
-| GET | `/api/detections/` | Todas detecções | Não |
+| GET | `/api/dashboards/` | Lista todos os dashboards | Não |
+| POST | `/api/dashboards/` | Cria novo dashboard | Não |
+| GET | `/api/dashboards/{id}/` | Detalhes do dashboard | Não |
+| PUT | `/api/dashboards/{id}/` | Atualiza dashboard | Não |
+| DELETE | `/api/dashboards/{id}/` | Remove dashboard | Não |
+| PATCH | `/api/dashboards/{id}/update-risk/` | Atualiza nível de risco | Não |
+| GET | `/api/dashboards/{id}/risk-history/` | Histórico de risco | Não |
+| GET | `/api/dashboards/risk-levels/` | Lista níveis de risco | Não |
+
+### Detecções
+
+| Método | Endpoint | Descrição | Auth |
+|--------|----------|-----------|------|
+| GET | `/api/detections/` | Lista todas as detecções | Não |
+| GET | `/api/detections/{id}/` | Detalhes de uma detecção | Não |
 
 ## 📊 Modelos de Dados
 
 ### Camera
-```python
+```json
 {
-    "camera_id": "string",     # Identificador único
-    "camera_link": "string",   # URL do stream
-    "camera_status": "string", # Status (active/inactive/error)
-    "camera_loc": "string"     # Localização física
+    "camera_id": "string (único)",
+    "camera_link": "string (URL RTSP/HTTP)",
+    "camera_status": "string (active/inactive/error)",
+    "camera_loc": "string (localização física)",
+    "created_at": "datetime",
+    "updated_at": "datetime"
+}
+```
+
+### Dashboard
+```json
+{
+    "dashboard_id": "string (único)",
+    "name": "string",
+    "risco": "string (baixo/medio/alto/critico)",
+    "cameras": ["array de IDs de câmeras"],
+    "created_at": "datetime",
+    "updated_at": "datetime"
 }
 ```
 
 ### Detection
-```python
+```json
 {
-    "detection_id": "int",     # ID automático
-    "detection_date": "date",  # Data (DD/MM/YY)
-    "detection_time": "time",  # Hora (HH:MM)
-    "detections": "array"      # Array de objetos detectados
+    "detection_id": "int (automático)",
+    "camera_id": "string",
+    "detection_date": "date (DD/MM/YYYY)",
+    "detection_time": "time (HH:MM:SS)",
+    "detections": [
+        {
+            "class": "string (objeto detectado)",
+            "confidence": "float (0-1)",
+            "bbox": [x1, y1, x2, y2]
+        }
+    ]
 }
 ```
 
-## ⚙️ Configurações
+## ⚙️ Configurações Importantes
 
-- Intervalo entre detecções: 15 segundos (ajustável em `camera/services.py`)
-- Confiança mínima: 0.45 (ajustável em `camera/object_detector.py`)
-- Modelo YOLO: YOLO11s (configurável para outros modelos)
+### Configurações de Detecção (em `camera/object_detector.py`):
+- **Confiança mínima:** 0.45 (ajustável)
+- **Modelo YOLO:** YOLO11s (pode ser alterado para YOLOv8, YOLOv10, etc.)
+- **Intervalo entre frames:** 15 segundos (ajustável em `camera/services.py`)
+
+### Configurações de WebSocket (em `extracaoimg/settings.py`):
+- Habilitado via Django Channels
+- Suporta múltiplas conexões simultâneas
+- Broadcast de detecções em tempo real
+
+### Configurações de Produção:
+```bash
+# Usar Gunicorn com múltiplos workers
+gunicorn extracaoimg.wsgi:application --workers 4 --bind 0.0.0.0:8000
+
+# Para WebSockets em produção, usar Daphne
+daphne -b 0.0.0.0 -p 8000 extracaoimg.asgi:application
+```
+
+## 🚦 Níveis de Risco
+
+| Nível | Cor | Descrição | Ação |
+|-------|-----|-----------|------|
+| **Baixo** | 🟢 Verde | Situação normal, monitoramento de rotina | Monitorar |
+| **Médio** | 🟡 Amarelo | Atenção necessária, monitoramento aumentado | Verificar |
+| **Alto** | 🔴 Vermelho | Situação de alerta, ação imediata recomendada | Agir |
+| **Crítico** | 🔴 Vermelho Escuro | Perigo iminente, ação urgente necessária | Intervir Urgente |
+
+## 📝 Exemplos de Uso
+
+### Criar um Dashboard
+```bash
+curl -X POST http://localhost:8000/api/dashboards/ \
+  -H "Content-Type: application/json" \
+  -d '{\n    "dashboard_id": "dash_001",\n    "name": "Monitoramento Entrada",\n    "risco": "baixo"\n  }'
+```
+
+### Adicionar Câmera a um Dashboard
+```bash
+curl -X POST http://localhost:8000/api/dashboards/dash_001/cameras/ \
+  -H "Content-Type: application/json" \
+  -d '{\n    "camera_id": "cam_001",\n    "camera_link": "rtsp://192.168.1.100:554/stream",\n    "camera_loc": "Entrada Principal",\n    "camera_status": "active"\n  }'
+```
+
+### Alterar Nível de Risco
+```bash
+curl -X PATCH http://localhost:8000/api/dashboards/dash_001/update-risk/ \
+  -H "Content-Type: application/json" \
+  -d '{"risco": "alto"}'
+```
+
+### Obter Stream de Câmera
+```bash
+# Acessar em um navegador ou VLC
+http://localhost:8000/api/cameras/cam_001/stream/
+```
+
+## 🔧 Troubleshooting
+
+### Problema: Conexão com MySQL falha
+- Verificar se o MySQL está rodando
+- Validar credenciais em `.env`
+- Confirmar se o banco de dados foi criado: `CREATE DATABASE chirp_db;`
+
+### Problema: Câmeras não conectam
+- Verificar se as URLs RTSP/HTTP estão corretas
+- Confirmar acesso à câmera na rede
+- Verificar firewall e permissões de acesso
+
+### Problema: Detecção lenta
+- Reduzir tamanho do input para YOLO
+- Usar modelo mais leve (YOLOv8n em vez de v11s)
+- Aumentar intervalo entre frames
+
+### Problema: WebSocket desconecta
+- Verificar logs do Channels
+- Aumentar timeout de conexão
+- Usar Daphne em produção em vez de Gunicorn
+
+## 📦 Dependências Principais
+
+Todas as dependências estão listadas em `requirements.txt`:
+- `django==5.2.1` - Framework web
+- `djangorestframework` - API REST
+- `channels` - WebSockets
+- `opencv-python` - Processamento de vídeo
+- `ultralytics` - YOLO
+- `torch` - PyTorch para IA
+- `mysqlclient` - Driver MySQL
+- `gunicorn` - Servidor WSGI
+- `python-dotenv` - Variáveis de ambiente
+
+## 📄 Licença
+
+Este projeto está licenciado sob a Licença MIT - veja o arquivo [LICENSE](LICENSE) para detalhes.
+
+## 👨‍💻 Contribuições
+
+Contribuições são bem-vindas! Por favor:
+
+1. Faça um Fork do projeto
+2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
+3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
+4. Push para a branch (`git push origin feature/AmazingFeature`)
+5. Abra um Pull Request
+
+## 🐛 Reportar Problemas
+
+Encontrou um bug? Abra uma [issue](https://github.com/LuisIanoski/Chirp/issues) descrevendo:
+- Comportamento esperado vs. observado
+- Passos para reproduzir
+- Versão do Python e dependências
+- Logs de erro relevantes
+
+## 📞 Suporte
+
+Para dúvidas ou sugestões, abra uma discussão ou issue no repositório.
+
+---
+
+**Desenvolvido com ❤️ usando Django e YOLO**
